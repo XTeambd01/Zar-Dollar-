@@ -369,7 +369,6 @@
             text-transform: uppercase;
         }
 
-        /* Status Background Colors */
         .bg-review { background: #fff3cd; color: #856404; }
         .bg-pending { background: #ffe8cc; color: #d97706; }
         .bg-processing { background: #e0f2fe; color: #0284c7; }
@@ -386,6 +385,56 @@
             display: block;
             font-size: 0.75rem;
             color: #888;
+        }
+
+        /* Live Dollar Rate Circle Box */
+        .rate-circle-box {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            color: #ffffff;
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 18px auto;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            border: 1.5px solid #d4af37;
+        }
+
+        .rate-circle-box .rate-title {
+            font-size: 0.8rem;
+            color: #d4af37;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .rate-circle-box .rate-val {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* Dynamic BDT Live Preview Badge */
+        .input-with-preview {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .bdt-preview-badge {
+            position: absolute;
+            right: 12px;
+            background: #eef2f5;
+            color: #27ae60;
+            font-size: 0.82rem;
+            font-weight: 800;
+            padding: 6px 10px;
+            border-radius: 8px;
+            pointer-events: none;
+            display: none;
+            border: 1px solid #c8e6c9;
         }
 
         /* Modal / Popups */
@@ -442,7 +491,7 @@
         .modal-title {
             font-size: 1.4rem;
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             text-align: center;
         }
 
@@ -605,7 +654,7 @@
     <!-- 1. Splash / Loading Screen -->
     <div id="splash-screen">
         <img src="https://i.ibb.co.com/qYzsdxQv/images.jpg" alt="ZAR Logo" class="splash-logo">
-        <div class="splash-title">ZAR Wallet Sell Your Dollars Fast and secure..</div>
+        <div class="splash-title">ZAR Wallet  Sell Dollar Fast and secure..</div>
         <div class="loader-bar">
             <div class="loader-progress"></div>
         </div>
@@ -619,7 +668,7 @@
             <!-- Top Hero Section -->
             <div class="hero-box">
                 <img src="https://i.ibb.co.com/bRG4CpXT/Screenshot-2026-09-10-15-13-13-211-com-mobile-zarpay.jpg" alt="Dollar Icon" class="main-icon">
-                <div class="amount-display">$ZAR WALLET</div>
+                <div class="amount-display">$ZAR EXCHANGE$</div>
                 
                 <div class="button-group">
                     <button class="btn btn-topup" onclick="openTopUpModal()">
@@ -631,15 +680,13 @@
                 </div>
             </div>
 
-            <!-- Screenshots UI Below Buttons -->
+            <!-- UI Sections -->
             <div class="content-section">
-                <!-- Gold Stat Badge -->
                 <div class="stat-card">
                     <span class="green-triangle">▲</span>
                     <span>Gold is up 10.6% this past year</span>
                 </div>
 
-                <!-- Chart Card -->
                 <div class="chart-card">
                     <div class="chart-header">
                         <span class="chart-label">Price per gram</span>
@@ -688,33 +735,6 @@
                         Our digital gold is backed by London Bullion Market Association, and UAE GD-certified gold, insured and independently verified.
                     </div>
                 </div>
-
-                <div class="info-card">
-                    <div class="info-icon-box icon-tan">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="17 1 21 5 17 9"></polyline>
-                            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
-                            <polyline points="7 23 3 19 7 15"></polyline>
-                            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
-                        </svg>
-                    </div>
-                    <div class="info-title">Secure Custody</div>
-                    <div class="info-desc">
-                        Held in tier-1 custodian vaults such as Brinks. Verified monthly by RSM, a top-10 global auditor ensuring trust and transparency.
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-icon-box icon-tan">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 5H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-7 9c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
-                        </svg>
-                    </div>
-                    <div class="info-title">Redeem Physical Gold</div>
-                    <div class="info-desc">
-                        Digital gold in ZAR can be redeemed for physical gold coins and bars, subject to standard logistics and minimum redemption amounts.
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -734,16 +754,30 @@
             <button class="close-btn" onclick="closeModal('sell-modal')">&times;</button>
             
             <div id="sell-form-wrapper">
+                <!-- Dollar Exchange Rate Circle Box -->
+                <div style="text-align: center;">
+                    <div class="rate-circle-box">
+                        <span class="rate-title">Market Rate:</span>
+                        <span class="rate-val" id="live-bdt-rate">1 USD = Loading...</span>
+                    </div>
+                </div>
+
                 <h3 class="modal-title">Sell Dollar Form</h3>
                 <form id="sell-form" onsubmit="handleFormSubmit(event)">
                     <div class="form-group">
                         <label for="trx-id">TRX ID</label>
                         <input type="text" id="trx-id" placeholder="Enter Transaction ID" required>
                     </div>
+                    
+                    <!-- Dollar Amount with Dynamic Live BDT Preview -->
                     <div class="form-group">
                         <label for="dollar-amount">Dollar Amount ($)</label>
-                        <input type="number" step="0.01" id="dollar-amount" placeholder="e.g. 50" required>
+                        <div class="input-with-preview">
+                            <input type="number" step="0.01" id="dollar-amount" placeholder="e.g. 1 or 0.30" oninput="calculateLiveBDT()" required style="padding-right: 120px;">
+                            <span id="bdt-preview" class="bdt-preview-badge">≈ 0.00 BDT</span>
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label for="mobile-number">Mobile Number</label>
                         <input type="tel" id="mobile-number" placeholder="01XXXXXXXXX" pattern="[0-9]{11}" required>
@@ -814,8 +848,43 @@
     </div>
 
     <script>
+        let currentMarketRate = 120.00; // Default exchange rate fallback
+
+        // Auto Fetch USD to BDT Market Rate
+        async function fetchMarketRate() {
+            const rateDisplay = document.getElementById('live-bdt-rate');
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await res.json();
+                if(data && data.rates && data.rates.BDT) {
+                    currentMarketRate = parseFloat(data.rates.BDT);
+                    rateDisplay.innerText = `1 USD = ${currentMarketRate.toFixed(2)} BDT`;
+                } else {
+                    rateDisplay.innerText = `1 USD = ${currentMarketRate.toFixed(2)} BDT`;
+                }
+            } catch (err) {
+                rateDisplay.innerText = `1 USD = ${currentMarketRate.toFixed(2)} BDT`;
+            }
+            calculateLiveBDT(); // Update calculation if input has values
+        }
+
+        // Live BDT Calculation inside input field
+        function calculateLiveBDT() {
+            const dollarInput = document.getElementById('dollar-amount').value;
+            const previewBadge = document.getElementById('bdt-preview');
+
+            if (dollarInput && parseFloat(dollarInput) > 0) {
+                const totalBDT = (parseFloat(dollarInput) * currentMarketRate).toFixed(2);
+                previewBadge.innerText = `≈ ${totalBDT} BDT`;
+                previewBadge.style.display = 'block';
+            } else {
+                previewBadge.style.display = 'none';
+            }
+        }
+
         // Hide Splash Screen and Show Main Interface
         window.addEventListener('load', () => {
+            fetchMarketRate();
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 const mainCard = document.getElementById('main-card');
@@ -848,9 +917,11 @@
 
         // Modal Controls
         function openSellModal() {
+            fetchMarketRate();
             document.getElementById('sell-form-wrapper').style.display = 'block';
             document.getElementById('success-screen').style.display = 'none';
             document.getElementById('sell-form').reset();
+            document.getElementById('bdt-preview').style.display = 'none';
             document.getElementById('sell-modal').classList.add('active');
         }
 
@@ -863,16 +934,20 @@
             e.preventDefault();
             
             const trxId = document.getElementById('trx-id').value;
-            const amount = document.getElementById('dollar-amount').value;
+            const dollarAmount = parseFloat(document.getElementById('dollar-amount').value);
             const mobile = document.getElementById('mobile-number').value;
             const wallet = document.getElementById('wallet-type').value;
             const link = document.getElementById('link-url').value;
+            
+            // Calculate BDT Amount
+            const bdtCalculated = (dollarAmount * currentMarketRate).toFixed(2);
             const now = new Date();
 
             const newEntry = { 
                 id: Date.now(),
                 trxId, 
-                amount, 
+                amount: dollarAmount,
+                bdtAmount: bdtCalculated,
                 mobile, 
                 wallet, 
                 link, 
@@ -917,7 +992,7 @@
             renderTableData();
         }
 
-        // Helper function to mask mobile number (e.g., 01712345678 -> 017*****678)
+        // Helper function to mask mobile number
         function maskMobileNumber(phone) {
             if (!phone || phone.length < 7) return phone;
             const start = phone.substring(0, 3);
@@ -941,7 +1016,7 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${item.trxId}</strong></td>
-                    <td>$${item.amount}</td>
+                    <td>$${item.amount} <br><small style="color:#27ae60;">(${item.bdtAmount} BDT)</small></td>
                     <td>${item.mobile}</td>
                     <td>${item.wallet}</td>
                     <td><a href="${item.link}" target="_blank" style="color:#ff47a9;">Link</a></td>
@@ -998,11 +1073,11 @@
                 card.className = 'status-card';
                 card.innerHTML = `
                     <div class="status-header">
-                        <strong style="color:#2c3e50;">TRX: ${item.trxId}</strong>
+                        <strong style="color:#2c3e50;">Order #${item.id.toString().slice(-6)}</strong>
                         <span class="status-badge ${badgeClass}">${statusText}</span>
                     </div>
                     <div class="status-details">
-                        <div><strong>Amount:</strong> $${item.amount}</div>
+                        <div><strong>Amount:</strong> $${item.amount} (${item.bdtAmount || 0} BDT)</div>
                         <div><strong>Wallet:</strong> ${item.wallet}</div>
                         <div><strong>Mobile:</strong> ${maskedMobile}</div>
                         <div><strong>Submitted:</strong> ${item.timeStr}</div>
