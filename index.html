@@ -20,11 +20,11 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 20px 10px;
+            padding: 20px 10px 80px 10px;
             overflow-x: hidden;
         }
 
-        /* Splash Screen (Loading Screen) */
+        /* Splash Screen */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -94,6 +94,17 @@
             transform: translateY(0);
         }
 
+        /* Views management */
+        .view-section {
+            width: 100%;
+            display: none;
+        }
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         /* Top Hero Card */
         .hero-box {
             width: 100%;
@@ -161,7 +172,7 @@
             transform: scale(0.98);
         }
 
-        /* Screenshot Content Sections */
+        /* Content Sections */
         .content-section {
             width: 100%;
             display: flex;
@@ -169,7 +180,6 @@
             gap: 16px;
         }
 
-        /* Stat Box */
         .stat-card {
             background: #ffffff;
             border: 1px solid #eef0f2;
@@ -190,7 +200,6 @@
             font-size: 0.85rem;
         }
 
-        /* Chart Container Card */
         .chart-card {
             background: #ffffff;
             border: 1px solid #eef0f2;
@@ -219,7 +228,6 @@
             color: #1a1a1a;
         }
 
-        /* SVG Chart Overlay Layout */
         .chart-wrapper {
             position: relative;
             width: 100%;
@@ -263,7 +271,6 @@
             margin-bottom: 20px;
         }
 
-        /* Time Selector Tabs */
         .time-selector {
             background: #f1f3f5;
             border-radius: 12px;
@@ -289,7 +296,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.06);
         }
 
-        /* How it works Section */
         .section-title {
             font-size: 1.35rem;
             font-weight: 800;
@@ -332,6 +338,54 @@
             line-height: 1.5;
             color: #6c757d;
             font-weight: 500;
+        }
+
+        /* Status Cards Style */
+        .status-card {
+            background: #ffffff;
+            border: 1px solid #eef0f2;
+            border-radius: 18px;
+            padding: 18px;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Status Background Colors */
+        .bg-review { background: #fff3cd; color: #856404; }
+        .bg-pending { background: #ffe8cc; color: #d97706; }
+        .bg-processing { background: #e0f2fe; color: #0284c7; }
+        .bg-success { background: #d1e7dd; color: #0f5132; }
+
+        .status-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.88rem;
+        }
+
+        .status-details div strong {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
         }
 
         /* Modal / Popups */
@@ -482,6 +536,58 @@
             top: 0;
         }
 
+        .btn-accept {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0d0d0d;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 2000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #888888;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            width: 50%;
+            transition: color 0.3s;
+        }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        .nav-item.active {
+            color: #d4af37;
+        }
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.04); }
@@ -508,113 +614,118 @@
     <!-- 2. Main Interface Container -->
     <div class="app-card" id="main-card">
         
-        <!-- Top Hero Section -->
-        <div class="hero-box">
-            <img src="https://i.ibb.co.com/bRG4CpXT/Screenshot-2026-09-10-15-13-13-211-com-mobile-zarpay.jpg" alt="Dollar Icon" class="main-icon">
-            <div class="amount-display">$00</div>
-            
-            <div class="button-group">
-                <button class="btn btn-topup" onclick="openTopUpModal()">
-                    <span>↓</span> TOP-UP
-                </button>
-                <button class="btn btn-send" onclick="openSellModal()">
-                    <span>↑</span> SELL DOLLAR
-                </button>
-            </div>
-        </div>
-
-        <!-- Screenshots UI Below Buttons -->
-        <div class="content-section">
-            <!-- Gold Stat Badge -->
-            <div class="stat-card">
-                <span class="green-triangle">▲</span>
-                <span>Gold is up 10.6% this past year</span>
-            </div>
-
-            <!-- Chart Card -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <span class="chart-label">Price per gram</span>
-                    <span class="chart-price">$144.56</span>
-                </div>
+        <!-- View 1: Home View -->
+        <div id="home-view" class="view-section active">
+            <!-- Top Hero Section -->
+            <div class="hero-box">
+                <img src="https://i.ibb.co.com/bRG4CpXT/Screenshot-2026-09-10-15-13-13-211-com-mobile-zarpay.jpg" alt="Dollar Icon" class="main-icon">
+                <div class="amount-display">$00</div>
                 
-                <div class="chart-wrapper">
-                    <div class="grid-line top"><span class="price-tag" style="top:-10px;">$148.3</span></div>
-                    <div class="grid-line middle"><span class="price-tag" style="top:-10px;">$143.1</span></div>
-                    <div class="grid-line bottom"><span class="price-tag" style="top:-10px;">$137.9</span></div>
+                <div class="button-group">
+                    <button class="btn btn-topup" onclick="openTopUpModal()">
+                        <span>↓</span> TOP-UP
+                    </button>
+                    <button class="btn btn-send" onclick="openSellModal()">
+                        <span>↑</span> SELL DOLLAR
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screenshots UI Below Buttons -->
+            <div class="content-section">
+                <!-- Gold Stat Badge -->
+                <div class="stat-card">
+                    <span class="green-triangle">▲</span>
+                    <span>Gold is up 10.6% this past year</span>
+                </div>
+
+                <!-- Chart Card -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-label">Price per gram</span>
+                        <span class="chart-price">$144.56</span>
+                    </div>
                     
-                    <!-- Dynamic Smooth Curved SVG Line -->
-                    <svg class="chart-svg" viewBox="0 0 300 120" preserveAspectRatio="none">
-                        <path d="M 0,105 C 15,90 20,85 30,85 C 40,85 45,95 55,95 C 65,95 70,80 80,82 C 90,84 95,50 105,30 C 115,10 125,20 135,20 C 145,20 150,25 160,50 C 170,75 175,70 185,85 C 195,100 200,60 210,62 C 220,64 225,75 235,75 C 245,75 250,70 260,35 L 260,35" 
-                              fill="none" 
-                              stroke="#2b5c8f" 
-                              stroke-width="3.5" 
-                              stroke-linecap="round"/>
-                        <!-- End Dot Marker -->
-                        <circle cx="260" cy="35" r="5" fill="#2b5c8f"/>
-                    </svg>
+                    <div class="chart-wrapper">
+                        <div class="grid-line top"><span class="price-tag" style="top:-10px;">$148.3</span></div>
+                        <div class="grid-line middle"><span class="price-tag" style="top:-10px;">$143.1</span></div>
+                        <div class="grid-line bottom"><span class="price-tag" style="top:-10px;">$137.9</span></div>
+                        
+                        <svg class="chart-svg" viewBox="0 0 300 120" preserveAspectRatio="none">
+                            <path d="M 0,105 C 15,90 20,85 30,85 C 40,85 45,95 55,95 C 65,95 70,80 80,82 C 90,84 95,50 105,30 C 115,10 125,20 135,20 C 145,20 150,25 160,50 C 170,75 175,70 185,85 C 195,100 200,60 210,62 C 220,64 225,75 235,75 C 245,75 250,70 260,35 L 260,35" 
+                                  fill="none" 
+                                  stroke="#2b5c8f" 
+                                  stroke-width="3.5" 
+                                  stroke-linecap="round"/>
+                            <circle cx="260" cy="35" r="5" fill="#2b5c8f"/>
+                        </svg>
+                    </div>
+
+                    <div class="chart-time-labels">
+                        <span>Aug 10</span>
+                        <span>Aug 25</span>
+                        <span>Today</span>
+                    </div>
+
+                    <div class="time-selector">
+                        <div class="time-tab">1W</div>
+                        <div class="time-tab active">1M</div>
+                        <div class="time-tab">1Y</div>
+                        <div class="time-tab">5Y</div>
+                    </div>
                 </div>
 
-                <div class="chart-time-labels">
-                    <span>Aug 10</span>
-                    <span>Aug 25</span>
-                    <span>Today</span>
+                <div class="section-title">How it works</div>
+
+                <div class="info-card">
+                    <div class="info-icon-box icon-purple">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm0 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 14.3c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                        </svg>
+                    </div>
+                    <div class="info-title">1:1 Vaulted Reserves</div>
+                    <div class="info-desc">
+                        Our digital gold is backed by London Bullion Market Association, and UAE GD-certified gold, insured and independently verified.
+                    </div>
                 </div>
 
-                <!-- Timeframe Selectors -->
-                <div class="time-selector">
-                    <div class="time-tab">1W</div>
-                    <div class="time-tab active">1M</div>
-                    <div class="time-tab">1Y</div>
-                    <div class="time-tab">5Y</div>
+                <div class="info-card">
+                    <div class="info-icon-box icon-tan">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="17 1 21 5 17 9"></polyline>
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                            <polyline points="7 23 3 19 7 15"></polyline>
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                        </svg>
+                    </div>
+                    <div class="info-title">Secure Custody</div>
+                    <div class="info-desc">
+                        Held in tier-1 custodian vaults such as Brinks. Verified monthly by RSM, a top-10 global auditor ensuring trust and transparency.
+                    </div>
                 </div>
-            </div>
 
-            <!-- How It Works Header -->
-            <div class="section-title">How it works</div>
-
-            <!-- Info Card 1: Vaulted Reserves -->
-            <div class="info-card">
-                <div class="info-icon-box icon-purple">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm0 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 14.3c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                    </svg>
-                </div>
-                <div class="info-title">1:1 Vaulted Reserves</div>
-                <div class="info-desc">
-                    Our digital gold is backed by London Bullion Market Association, and UAE GD-certified gold, insured and independently verified.
-                </div>
-            </div>
-
-            <!-- Info Card 2: Secure Custody -->
-            <div class="info-card">
-                <div class="info-icon-box icon-tan">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="17 1 21 5 17 9"></polyline>
-                        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
-                        <polyline points="7 23 3 19 7 15"></polyline>
-                        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
-                    </svg>
-                </div>
-                <div class="info-title">Secure Custody</div>
-                <div class="info-desc">
-                    Held in tier-1 custodian vaults such as Brinks. Verified monthly by RSM, a top-10 global auditor ensuring trust and transparency.
-                </div>
-            </div>
-
-            <!-- Info Card 3: Redeem Physical Gold -->
-            <div class="info-card">
-                <div class="info-icon-box icon-tan">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 5H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-7 9c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
-                    </svg>
-                </div>
-                <div class="info-title">Redeem Physical Gold</div>
-                <div class="info-desc">
-                    Digital gold in ZAR can be redeemed for physical gold coins and bars, subject to standard logistics and minimum redemption amounts.
+                <div class="info-card">
+                    <div class="info-icon-box icon-tan">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 5H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-7 9c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+                        </svg>
+                    </div>
+                    <div class="info-title">Redeem Physical Gold</div>
+                    <div class="info-desc">
+                        Digital gold in ZAR can be redeemed for physical gold coins and bars, subject to standard logistics and minimum redemption amounts.
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- View 2: Status View -->
+        <div id="status-view" class="view-section">
+            <div class="section-title" style="margin-bottom: 10px;">Transaction Status</div>
+            <div id="status-list-container" class="content-section">
+                <!-- Status cards will load dynamically -->
+            </div>
+        </div>
+
     </div>
 
     <!-- 3. Sell Dollar Form Modal -->
@@ -654,7 +765,6 @@
                 </form>
             </div>
 
-            <!-- Success Screen -->
             <div class="success-container" id="success-screen">
                 <div class="checkmark-circle">
                     <svg viewBox="0 0 24 24">
@@ -668,7 +778,7 @@
 
     <!-- 4. Top-Up (Admin Submissions) Modal -->
     <div class="modal-overlay" id="topup-modal">
-        <div class="modal-box" style="max-width: 480px;">
+        <div class="modal-box" style="max-width: 520px;">
             <button class="close-btn" onclick="closeModal('topup-modal')">&times;</button>
             <h3 class="modal-title">Submitted Details</h3>
             <div class="table-container">
@@ -680,7 +790,7 @@
                             <th>Mobile</th>
                             <th>Wallet</th>
                             <th>Link</th>
-                            <th>Time</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="records-table-body">
@@ -689,6 +799,18 @@
                 </table>
             </div>
         </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <button class="nav-item active" id="nav-home" onclick="switchView('home')">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Home
+        </button>
+        <button class="nav-item" id="nav-status" onclick="switchView('status')">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            Status
+        </button>
     </div>
 
     <script>
@@ -702,6 +824,27 @@
                 mainCard.classList.add('show');
             }, 2500);
         });
+
+        // Bottom Navigation Switch
+        function switchView(viewName) {
+            const homeView = document.getElementById('home-view');
+            const statusView = document.getElementById('status-view');
+            const navHome = document.getElementById('nav-home');
+            const navStatus = document.getElementById('nav-status');
+
+            if (viewName === 'home') {
+                homeView.classList.add('active');
+                statusView.classList.remove('active');
+                navHome.classList.add('active');
+                navStatus.classList.remove('active');
+            } else if (viewName === 'status') {
+                statusView.classList.add('active');
+                homeView.classList.remove('active');
+                navStatus.classList.add('active');
+                navHome.classList.remove('active');
+                renderUserStatus();
+            }
+        }
 
         // Modal Controls
         function openSellModal() {
@@ -724,9 +867,19 @@
             const mobile = document.getElementById('mobile-number').value;
             const wallet = document.getElementById('wallet-type').value;
             const link = document.getElementById('link-url').value;
-            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const now = new Date();
 
-            const newEntry = { trxId, amount, mobile, wallet, link, time: timestamp };
+            const newEntry = { 
+                id: Date.now(),
+                trxId, 
+                amount, 
+                mobile, 
+                wallet, 
+                link, 
+                timestamp: now.getTime(),
+                timeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                accepted: false 
+            };
 
             const currentData = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
             currentData.push(newEntry);
@@ -751,7 +904,28 @@
             }
         }
 
-        // Render Submissions
+        // Admin Action: Accept Request
+        function acceptOrder(id) {
+            let data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+            data = data.map(item => {
+                if (item.id === id) {
+                    item.accepted = true;
+                }
+                return item;
+            });
+            localStorage.setItem('zar_submissions', JSON.stringify(data));
+            renderTableData();
+        }
+
+        // Helper function to mask mobile number (e.g., 01712345678 -> 017*****678)
+        function maskMobileNumber(phone) {
+            if (!phone || phone.length < 7) return phone;
+            const start = phone.substring(0, 3);
+            const end = phone.substring(phone.length - 3);
+            return `${start}*****${end}`;
+        }
+
+        // Render Submissions in Admin Table
         function renderTableData() {
             const tableBody = document.getElementById('records-table-body');
             const data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
@@ -771,9 +945,70 @@
                     <td>${item.mobile}</td>
                     <td>${item.wallet}</td>
                     <td><a href="${item.link}" target="_blank" style="color:#ff47a9;">Link</a></td>
-                    <td>${item.time}</td>
+                    <td>
+                        ${item.accepted ? 
+                            '<span style="color:#27ae60; font-weight:bold;">Accepted</span>' : 
+                            `<button class="btn-accept" onclick="acceptOrder(${item.id})">Accept</button>`
+                        }
+                    </td>
                 `;
                 tableBody.appendChild(row);
+            });
+        }
+
+        // Render Status View for User
+        function renderUserStatus() {
+            const container = document.getElementById('status-list-container');
+            const data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:#888; padding:30px 0;">আপনি এখনো কোনো রিকোয়েস্ট সাবমিট করেননি।</div>`;
+                return;
+            }
+
+            const currentTime = Date.now();
+
+            data.slice().reverse().forEach(item => {
+                let statusText = "Under Review";
+                let badgeClass = "bg-review";
+
+                if (item.accepted) {
+                    statusText = "Success";
+                    badgeClass = "bg-success";
+                } else {
+                    const elapsedMinutes = (currentTime - item.timestamp) / (1000 * 60);
+
+                    if (elapsedMinutes >= 13) {
+                        statusText = "Processing";
+                        badgeClass = "bg-processing";
+                    } else if (elapsedMinutes >= 5) {
+                        statusText = "Pending";
+                        badgeClass = "bg-pending";
+                    } else if (elapsedMinutes >= 1) {
+                        statusText = "In Review";
+                        badgeClass = "bg-review";
+                    }
+                }
+
+                const maskedMobile = maskMobileNumber(item.mobile);
+
+                const card = document.createElement('div');
+                card.className = 'status-card';
+                card.innerHTML = `
+                    <div class="status-header">
+                        <strong style="color:#2c3e50;">TRX: ${item.trxId}</strong>
+                        <span class="status-badge ${badgeClass}">${statusText}</span>
+                    </div>
+                    <div class="status-details">
+                        <div><strong>Amount:</strong> $${item.amount}</div>
+                        <div><strong>Wallet:</strong> ${item.wallet}</div>
+                        <div><strong>Mobile:</strong> ${maskedMobile}</div>
+                        <div><strong>Submitted:</strong> ${item.timeStr}</div>
+                    </div>
+                `;
+                container.appendChild(card);
             });
         }
     </script>
