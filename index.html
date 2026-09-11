@@ -324,6 +324,7 @@
         }
 
         .icon-purple { background: #3b1e54; color: #ffffff; }
+        .icon-tan { background: #d0c09f; color: #1a1a1a; }
 
         .info-title {
             font-size: 1.15rem;
@@ -535,11 +536,6 @@
             margin-top: 10px;
         }
 
-        .submit-btn:disabled {
-            background: #a5d6a7;
-            cursor: not-allowed;
-        }
-
         .success-container {
             text-align: center;
             padding: 20px 0;
@@ -721,7 +717,6 @@
                     <div class="time-selector">
                         <div class="time-tab">1W</div>
                         <div class="time-tab active">1M</div>
-                        <div class="time-tab">1Y</div>
                         <div class="time-tab">5Y</div>
                     </div>
                 </div>
@@ -799,7 +794,7 @@
                         <label for="link-url">Submit Link</label>
                         <input type="url" id="link-url" placeholder="https://example.com" required>
                     </div>
-                    <button type="submit" id="submit-btn" class="submit-btn">Submit Request</button>
+                    <button type="submit" class="submit-btn">Submit Request</button>
                 </form>
             </div>
 
@@ -852,43 +847,11 @@
     </div>
 
     <script>
-        // Global Cloud Storage Endpoint (Shared across devices)
-        const BIN_ID = '663bc18012a5d376599547d6'; 
-        const API_KEY = '$2a$10$R2RjJcTh4H9/sM/rB5wUue0J23Z4C4Y05z2U0B9H5K4gA1B2C3D4E'; // Fallback Sync Endpoint
+        // Telegram Bot Configuration
+        const TELEGRAM_BOT_TOKEN = "8946364086:AAE7t2t6iQ5Z7pCEGCGl--1y_GAKKZDfz7g";
+        const TELEGRAM_CHAT_ID = "8748271795";
 
         let currentMarketRate = 120.00; // Default exchange rate fallback
-
-        // Helper for Cloud Storage
-        async function getCloudData() {
-            try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': API_KEY }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.record || [];
-                }
-            } catch (e) {
-                console.log("Cloud read error, falling back to local");
-            }
-            return JSON.parse(localStorage.getItem('zar_submissions') || '[]');
-        }
-
-        async function saveCloudData(data) {
-            localStorage.setItem('zar_submissions', JSON.stringify(data));
-            try {
-                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': API_KEY
-                    },
-                    body: JSON.stringify(data)
-                });
-            } catch (e) {
-                console.log("Cloud save error");
-            }
-        }
 
         // Auto Fetch USD to BDT Market Rate
         async function fetchMarketRate() {
@@ -905,7 +868,7 @@
             } catch (err) {
                 rateDisplay.innerText = `1 USD = ${currentMarketRate.toFixed(2)} BDT`;
             }
-            calculateLiveBDT();
+            calculateLiveBDT(); // Update calculation if input has values
         }
 
         // Live BDT Calculation inside input field
@@ -919,6 +882,36 @@
                 previewBadge.style.display = 'block';
             } else {
                 previewBadge.style.display = 'none';
+            }
+        }
+
+        // Send Data to Telegram Bot
+        async function sendToTelegram(data) {
+            const message = `🚨 *New Sell Dollar Order Request* 🚨\n\n` +
+                            `🆔 *TRX ID:* \`${data.trxId}\`\n` +
+                            `💵 *Dollar Amount:* $${data.amount}\n` +
+                            `🇧🇩 *BDT Amount:* ${data.bdtAmount} BDT\n` +
+                            `📱 *Mobile Number:* \`${data.mobile}\`\n` +
+                            `💼 *Wallet Type:* ${data.wallet}\n` +
+                            `🔗 *Submitted Link:* ${data.link}\n` +
+                            `⏰ *Time:* ${data.timeStr}`;
+
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (error) {
+                console.error('Error sending message to Telegram:', error);
             }
         }
 
@@ -970,19 +963,16 @@
         }
 
         // Form Handling
-        async function handleFormSubmit(e) {
+        function handleFormSubmit(e) {
             e.preventDefault();
             
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
-            btn.innerText = "Submitting...";
-
             const trxId = document.getElementById('trx-id').value;
             const dollarAmount = parseFloat(document.getElementById('dollar-amount').value);
             const mobile = document.getElementById('mobile-number').value;
             const wallet = document.getElementById('wallet-type').value;
             const link = document.getElementById('link-url').value;
             
+            // Calculate BDT Amount
             const bdtCalculated = (dollarAmount * currentMarketRate).toFixed(2);
             const now = new Date();
 
@@ -999,12 +989,12 @@
                 accepted: false 
             };
 
-            const currentData = await getCloudData();
-            currentData.push(newEntry);
-            await saveCloudData(currentData);
+            // Send Notification to Telegram
+            sendToTelegram(newEntry);
 
-            btn.disabled = false;
-            btn.innerText = "Submit Request";
+            const currentData = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+            currentData.push(newEntry);
+            localStorage.setItem('zar_submissions', JSON.stringify(currentData));
 
             document.getElementById('sell-form-wrapper').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
@@ -1025,16 +1015,16 @@
             }
         }
 
-        // Admin Action: Accept Order
-        async function acceptOrder(id) {
-            let data = await getCloudData();
+        // Admin Action: Accept Request
+        function acceptOrder(id) {
+            let data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
             data = data.map(item => {
                 if (item.id === id) {
                     item.accepted = true;
                 }
                 return item;
             });
-            await saveCloudData(data);
+            localStorage.setItem('zar_submissions', JSON.stringify(data));
             renderTableData();
         }
 
@@ -1047,11 +1037,10 @@
         }
 
         // Render Submissions in Admin Table
-        async function renderTableData() {
+        function renderTableData() {
             const tableBody = document.getElementById('records-table-body');
-            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Loading...</td></tr>`;
+            const data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
             
-            const data = await getCloudData();
             tableBody.innerHTML = '';
             
             if (data.length === 0) {
@@ -1079,11 +1068,10 @@
         }
 
         // Render Status View for User
-        async function renderUserStatus() {
+        function renderUserStatus() {
             const container = document.getElementById('status-list-container');
-            container.innerHTML = `<div style="text-align:center; color:#888; padding:30px 0;">Loading...</div>`;
-            
-            const data = await getCloudData();
+            const data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+
             container.innerHTML = '';
 
             if (data.length === 0) {
@@ -1103,14 +1091,20 @@
                 } else {
                     const elapsedMinutes = (currentTime - item.timestamp) / (1000 * 60);
 
-                    if (elapsedMinutes >= 13) {
-                        statusText = "Processing";
-                        badgeClass = "bg-processing";
-                    } else if (elapsedMinutes >= 5) {
+                    if (elapsedMinutes >= 5) {
+                        statusText = "Success";
+                        badgeClass = "bg-success";
+                    } else if (elapsedMinutes >= 3) {
                         statusText = "Pending";
                         badgeClass = "bg-pending";
+                    } else if (elapsedMinutes >= 2) {
+                        statusText = "Review";
+                        badgeClass = "bg-review";
                     } else if (elapsedMinutes >= 1) {
                         statusText = "In Review";
+                        badgeClass = "bg-review";
+                    } else {
+                        statusText = "Under Review";
                         badgeClass = "bg-review";
                     }
                 }
