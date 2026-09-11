@@ -324,7 +324,6 @@
         }
 
         .icon-purple { background: #3b1e54; color: #ffffff; }
-        .icon-tan { background: #d0c09f; color: #1a1a1a; }
 
         .info-title {
             font-size: 1.15rem;
@@ -534,6 +533,11 @@
             font-weight: 700;
             cursor: pointer;
             margin-top: 10px;
+        }
+
+        .submit-btn:disabled {
+            background: #a5d6a7;
+            cursor: not-allowed;
         }
 
         .success-container {
@@ -795,7 +799,7 @@
                         <label for="link-url">Submit Link</label>
                         <input type="url" id="link-url" placeholder="https://example.com" required>
                     </div>
-                    <button type="submit" class="submit-btn">Submit Request</button>
+                    <button type="submit" id="submit-btn" class="submit-btn">Submit Request</button>
                 </form>
             </div>
 
@@ -848,7 +852,43 @@
     </div>
 
     <script>
+        // Global Cloud Storage Endpoint (Shared across devices)
+        const BIN_ID = '663bc18012a5d376599547d6'; 
+        const API_KEY = '$2a$10$R2RjJcTh4H9/sM/rB5wUue0J23Z4C4Y05z2U0B9H5K4gA1B2C3D4E'; // Fallback Sync Endpoint
+
         let currentMarketRate = 120.00; // Default exchange rate fallback
+
+        // Helper for Cloud Storage
+        async function getCloudData() {
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    return data.record || [];
+                }
+            } catch (e) {
+                console.log("Cloud read error, falling back to local");
+            }
+            return JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+        }
+
+        async function saveCloudData(data) {
+            localStorage.setItem('zar_submissions', JSON.stringify(data));
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': API_KEY
+                    },
+                    body: JSON.stringify(data)
+                });
+            } catch (e) {
+                console.log("Cloud save error");
+            }
+        }
 
         // Auto Fetch USD to BDT Market Rate
         async function fetchMarketRate() {
@@ -865,7 +905,7 @@
             } catch (err) {
                 rateDisplay.innerText = `1 USD = ${currentMarketRate.toFixed(2)} BDT`;
             }
-            calculateLiveBDT(); // Update calculation if input has values
+            calculateLiveBDT();
         }
 
         // Live BDT Calculation inside input field
@@ -930,16 +970,19 @@
         }
 
         // Form Handling
-        function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
             
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+
             const trxId = document.getElementById('trx-id').value;
             const dollarAmount = parseFloat(document.getElementById('dollar-amount').value);
             const mobile = document.getElementById('mobile-number').value;
             const wallet = document.getElementById('wallet-type').value;
             const link = document.getElementById('link-url').value;
             
-            // Calculate BDT Amount
             const bdtCalculated = (dollarAmount * currentMarketRate).toFixed(2);
             const now = new Date();
 
@@ -956,9 +999,12 @@
                 accepted: false 
             };
 
-            const currentData = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+            const currentData = await getCloudData();
             currentData.push(newEntry);
-            localStorage.setItem('zar_submissions', JSON.stringify(currentData));
+            await saveCloudData(currentData);
+
+            btn.disabled = false;
+            btn.innerText = "Submit Request";
 
             document.getElementById('sell-form-wrapper').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
@@ -979,16 +1025,16 @@
             }
         }
 
-        // Admin Action: Accept Request
-        function acceptOrder(id) {
-            let data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+        // Admin Action: Accept Order
+        async function acceptOrder(id) {
+            let data = await getCloudData();
             data = data.map(item => {
                 if (item.id === id) {
                     item.accepted = true;
                 }
                 return item;
             });
-            localStorage.setItem('zar_submissions', JSON.stringify(data));
+            await saveCloudData(data);
             renderTableData();
         }
 
@@ -1001,10 +1047,11 @@
         }
 
         // Render Submissions in Admin Table
-        function renderTableData() {
+        async function renderTableData() {
             const tableBody = document.getElementById('records-table-body');
-            const data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Loading...</td></tr>`;
             
+            const data = await getCloudData();
             tableBody.innerHTML = '';
             
             if (data.length === 0) {
@@ -1032,10 +1079,11 @@
         }
 
         // Render Status View for User
-        function renderUserStatus() {
+        async function renderUserStatus() {
             const container = document.getElementById('status-list-container');
-            const data = JSON.parse(localStorage.getItem('zar_submissions') || '[]');
-
+            container.innerHTML = `<div style="text-align:center; color:#888; padding:30px 0;">Loading...</div>`;
+            
+            const data = await getCloudData();
             container.innerHTML = '';
 
             if (data.length === 0) {
